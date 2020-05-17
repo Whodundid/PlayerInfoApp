@@ -1,0 +1,16 @@
+[
+{
+  "modid": "playerinfo",
+  "name": "EMC Player Info",
+  "description": "Player Info App for EnhancedMC 1.0",
+  "version": "2.0",
+  "mcversion": "1.8.9",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Whodundid"],
+  "credits": "Mr.JamminOtter for art and logos",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": [enhancedmc]
+}
+]
