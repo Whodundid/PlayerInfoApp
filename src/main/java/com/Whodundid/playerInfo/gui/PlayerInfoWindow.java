@@ -67,6 +67,18 @@ public class PlayerInfoWindow extends WindowParent {
 		inputName = nameIn;
 	}
 	
+	//----------------
+	//Object Overrides
+	//----------------
+	
+	@Override
+	public void finalize() throws Throwable {
+		if (skin != null) { skin.getDynamicTexture().deleteGlTexture(); }
+		if (cape != null) { cape.getDynamicTexture().deleteGlTexture(); }
+		
+		super.finalize();
+	}
+	
 	@Override
 	public void initGui() {
 		setDimensions(495, defaultHeight);
@@ -206,8 +218,12 @@ public class PlayerInfoWindow extends WindowParent {
 	
 	@Override
 	public void close() {
-		if (playerEntity != null) { playerEntity.destroy(); }
 		super.close();
+		
+		if (skin != null) { skin.getDynamicTexture().deleteGlTexture(); }
+		if (cape != null) { cape.getDynamicTexture().deleteGlTexture(); }
+		
+		playerEntity.destroy();
 	}
 	
 	public void onNamesResponse(String playerNameIn, String uuidIn, EArrayList<String> namesIn) {
