@@ -1,22 +1,20 @@
-package com.Whodundid.playerInfo.term;
+package com.Whodundid.playerInfo.terminal;
 
-import com.Whodundid.core.EnhancedMC;
 import com.Whodundid.core.app.AppType;
 import com.Whodundid.core.app.RegisteredApps;
-import com.Whodundid.core.terminal.gui.ETerminal;
 import com.Whodundid.core.terminal.terminalCommand.CommandType;
 import com.Whodundid.core.terminal.terminalCommand.TerminalCommand;
-import com.Whodundid.core.util.renderUtil.CenterType;
+import com.Whodundid.core.terminal.window.ETerminal;
 import com.Whodundid.core.util.storageUtil.EArrayList;
 import com.Whodundid.playerInfo.PlayerInfoApp;
-import com.Whodundid.playerInfo.gui.PlayerInfoWindow;
 
 public class Term_InfoPlayer extends TerminalCommand {
 	
 	PlayerInfoApp mod = (PlayerInfoApp) RegisteredApps.getApp(AppType.PLAYERINFO);
 	
 	public Term_InfoPlayer() {
-		super(CommandType.MOD_COMMAND);
+		super(CommandType.APP_COMMAND);
+		setCategory("Player Info");
 	}
 
 	@Override public String getName() { return "pinfo"; }

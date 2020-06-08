@@ -1,15 +1,9 @@
 package com.Whodundid.playerInfo.cmd;
 
 import java.util.List;
-
-import com.Whodundid.core.EnhancedMC;
-import com.Whodundid.core.renderer.renderUtil.RendererProxyGui;
 import com.Whodundid.core.util.chatUtil.ChatBuilder;
 import com.Whodundid.core.util.storageUtil.EArrayList;
 import com.Whodundid.playerInfo.PlayerInfoApp;
-import com.Whodundid.playerInfo.gui.PlayerInfoWindow;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;

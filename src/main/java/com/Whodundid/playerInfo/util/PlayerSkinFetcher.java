@@ -1,13 +1,12 @@
 package com.Whodundid.playerInfo.util;
 
-import com.Whodundid.core.terminal.gui.ETerminal;
+import com.Whodundid.core.terminal.window.ETerminal;
 import com.Whodundid.core.util.EUtil;
 import com.Whodundid.core.util.chatUtil.ChatBuilder;
 import com.Whodundid.core.util.renderUtil.EColors;
 import com.Whodundid.core.util.storageUtil.EArrayList;
 import com.Whodundid.playerInfo.PlayerInfoApp;
-import com.Whodundid.playerInfo.gui.PlayerInfoWindow;
-
+import com.Whodundid.playerInfo.window.PlayerInfoWindow;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -45,13 +44,13 @@ public class PlayerSkinFetcher {
 					if (testUUID != null) {
 						int nameIndex = EUtil.findStartingIndex(testUUID, "\"name\":\"") + 8;
 						name = EUtil.subStringToString(testUUID, nameIndex, "\"");
-						System.out.println("Name: " + name);
+						//System.out.println("Name: " + name);
 						int uuidIndex = EUtil.findStartingIndex(testUUID, "\"id\":\"") + 6;
 						uuid = testUUID.substring(uuidIndex, testUUID.length() - 2);
 					}
 					getUuid.close();
 					
-					System.out.println("the uuid: " + uuid);
+					//System.out.println("the uuid: " + uuid);
 				}
 				catch (IOException e) {  e.printStackTrace(); }
 				

@@ -5,26 +5,25 @@ import com.Whodundid.core.app.AppConfigSetting;
 import com.Whodundid.core.app.AppType;
 import com.Whodundid.core.app.EMCApp;
 import com.Whodundid.core.app.config.AppConfigFile;
-import com.Whodundid.core.enhancedGui.guiObjects.advancedObjects.textArea.EGuiTextArea;
-import com.Whodundid.core.enhancedGui.guiObjects.advancedObjects.textArea.TextAreaLine;
-import com.Whodundid.core.terminal.gui.ETerminal;
+import com.Whodundid.core.terminal.window.ETerminal;
 import com.Whodundid.core.util.EUtil;
 import com.Whodundid.core.util.chatUtil.ChatBuilder;
+import com.Whodundid.core.util.mathUtil.NumberUtil;
 import com.Whodundid.core.util.playerUtil.PlayerFacing;
 import com.Whodundid.core.util.resourceUtil.EResource;
 import com.Whodundid.core.util.storageUtil.EArrayList;
 import com.Whodundid.playerInfo.cmd.CMD_CheckNameHistory;
 import com.Whodundid.playerInfo.cmd.CMD_CheckPlayerSkin;
 import com.Whodundid.playerInfo.cmd.CMD_InfoPlayer;
-import com.Whodundid.playerInfo.gui.PlayerInfoWindow;
-import com.Whodundid.playerInfo.gui.PlayerInfoSettings;
-import com.Whodundid.playerInfo.gui.SkinDisplayWindow;
-import com.Whodundid.playerInfo.term.Term_InfoPlayer;
-import com.Whodundid.playerInfo.term.Term_NameHistory;
-import com.Whodundid.playerInfo.term.Term_PlayerSkin;
+import com.Whodundid.playerInfo.terminal.Term_InfoPlayer;
+import com.Whodundid.playerInfo.terminal.Term_NameHistory;
+import com.Whodundid.playerInfo.terminal.Term_PlayerSkin;
 import com.Whodundid.playerInfo.util.PIResources;
 import com.Whodundid.playerInfo.util.PlayerSkinFetcher;
 import com.Whodundid.playerInfo.util.SkinContainer;
+import com.Whodundid.playerInfo.window.PlayerInfoSettings;
+import com.Whodundid.playerInfo.window.PlayerInfoWindow;
+import com.Whodundid.playerInfo.window.SkinDisplayWindow;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -48,7 +47,7 @@ public final class PlayerInfoApp extends EMCApp {
 	public static final String VERSION = "2.0";
 	public static final String NAME = "EMC Player Info";
 	
-	public static final AppConfigSetting<Boolean> drawCapes = new AppConfigSetting(Boolean.class, "drawCapes", "Draw Capes", false);
+	public static final AppConfigSetting<Boolean> drawCapes = new AppConfigSetting(Boolean.class, "drawCapes", "Draw Capes", true);
 	public static final AppConfigSetting<Boolean> animateSkins = new AppConfigSetting(Boolean.class, "animateSkin", "Anitate Skin Display", true);
 	public static final AppConfigSetting<Boolean> drawNames = new AppConfigSetting(Boolean.class, "drawName", "Draw Player Name", false);
 	public static final AppConfigSetting<Boolean> randomBackgrounds = new AppConfigSetting(Boolean.class, "randomBackgrounds", "Randomize Player Backgrounds", true);
@@ -75,13 +74,14 @@ public final class PlayerInfoApp extends EMCApp {
 	public PlayerInfoApp() {
 		super(AppType.PLAYERINFO);
 		version = VERSION;
+		versionDate = "June 6, 2020";
 		author = "Whodundid";
 		artist = "Mr.JamminOtter";
 		addDependency(AppType.CORE, "1.0");
 		
 		configManager.setMainConfig(new AppConfigFile(this, "playerinfo", "EMC Player Info Config"));
-		setMainGui(new PlayerInfoSettings());
-		addGui(new SkinDisplayWindow("", ""), new PlayerInfoWindow(""));
+		setMainWindow(new PlayerInfoSettings());
+		addWindow(new SkinDisplayWindow("", ""), new PlayerInfoWindow(""));
 		
 		setResources(new PIResources());
 		logo = new EArrayList<EResource>(PIResources.logo);
@@ -168,6 +168,29 @@ public final class PlayerInfoApp extends EMCApp {
 			EnhancedMC.getTerminalHandler().registerCommand(new Term_PlayerSkin(), termIn, runVisually);
 			EnhancedMC.getTerminalHandler().registerCommand(new Term_InfoPlayer(), termIn, runVisually);
 		}
+	}
+	
+	public static EResource getRandomBackground() {
+		int num = NumberUtil.getRoll(0, 13);
+		
+		switch (num) {
+		case 0: return PIResources.viewerBackground0;
+		case 1: return PIResources.viewerBackground1;
+		case 2: return PIResources.viewerBackground2;
+		case 3: return PIResources.viewerBackground3;
+		case 4: return PIResources.viewerBackground4;
+		case 5: return PIResources.viewerBackground5;
+		case 6: return PIResources.viewerBackground6;
+		case 7: return PIResources.viewerBackground7;
+		case 8: return PIResources.viewerBackground8;
+		case 9: return PIResources.viewerBackground9;
+		case 10: return PIResources.viewerBackground10;
+		case 11: return PIResources.viewerBackground11;
+		case 12: return PIResources.viewerBackground12;
+		case 13: return PIResources.viewerBackground13;
+		}
+		
+		return null;
 	}
 	
 	//---------------------

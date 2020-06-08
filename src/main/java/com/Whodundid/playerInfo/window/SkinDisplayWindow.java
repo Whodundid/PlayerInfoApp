@@ -1,23 +1,21 @@
-package com.Whodundid.playerInfo.gui;
+package com.Whodundid.playerInfo.window;
 
 import com.Whodundid.core.EnhancedMC;
 import com.Whodundid.core.app.AppType;
 import com.Whodundid.core.app.RegisteredApps;
-import com.Whodundid.core.enhancedGui.guiObjects.actionObjects.EGuiButton;
-import com.Whodundid.core.enhancedGui.guiObjects.utilityObjects.EGuiPlayerViewer;
-import com.Whodundid.core.enhancedGui.guiObjects.windows.EGuiDialogueBox;
-import com.Whodundid.core.enhancedGui.guiObjects.windows.EGuiDialogueBox.DialogueBoxTypes;
-import com.Whodundid.core.enhancedGui.types.WindowParent;
-import com.Whodundid.core.enhancedGui.types.interfaces.IEnhancedActionObject;
 import com.Whodundid.core.util.EUtil;
-import com.Whodundid.core.util.chatUtil.EChatUtil;
-import com.Whodundid.core.util.mathUtil.NumberUtil;
 import com.Whodundid.core.util.playerUtil.DummyPlayer;
 import com.Whodundid.core.util.renderUtil.CenterType;
 import com.Whodundid.core.util.renderUtil.EColors;
+import com.Whodundid.core.util.resourceUtil.DynamicTextureHandler;
 import com.Whodundid.core.util.resourceUtil.EResource;
-import com.Whodundid.core.util.storageUtil.DynamicTextureHandler;
 import com.Whodundid.core.util.storageUtil.EDimension;
+import com.Whodundid.core.windowLibrary.windowObjects.actionObjects.WindowButton;
+import com.Whodundid.core.windowLibrary.windowObjects.utilityObjects.PlayerViewer;
+import com.Whodundid.core.windowLibrary.windowObjects.windows.WindowDialogueBox;
+import com.Whodundid.core.windowLibrary.windowObjects.windows.WindowDialogueBox.DialogueBoxTypes;
+import com.Whodundid.core.windowLibrary.windowTypes.WindowParent;
+import com.Whodundid.core.windowLibrary.windowTypes.interfaces.IActionObject;
 import com.Whodundid.playerInfo.PlayerInfoApp;
 import com.Whodundid.playerInfo.util.PIResources;
 import java.awt.image.BufferedImage;
@@ -39,9 +37,10 @@ public class SkinDisplayWindow extends WindowParent {
 	boolean hasCape = false;
 	boolean texture = false;
 	DummyPlayer playerEntity;
+	EResource background;
 	
-	EGuiPlayerViewer skinViewer;
-	EGuiButton closeBtn, textureBtn, downloadBtn;
+	PlayerViewer skinViewer;
+	WindowButton closeBtn, textureBtn, downloadBtn;
 	
 	//-----------------------------
 	//SkinDisplayWindow Constructor
@@ -77,25 +76,29 @@ public class SkinDisplayWindow extends WindowParent {
 	
 	@Override
 	public void initGui() {
-		defaultPos();
 		setObjectName(playerName + "'s Skin");
-		
-		super.initGui();
+		defaultDims();
+		setResizeable(true);
+		setMinDims(206, 222);
+		setMaximizable(true);
 	}
 	
 	@Override
 	public void initObjects() {
 		defaultHeader(this);
 		
-		skinViewer = new EGuiPlayerViewer(this, startX + 10, startY + 10, width - 20, width - 20, playerEntity);
+		skinViewer = new PlayerViewer(this, startX + 10, startY + 10, width - 20, height - 50, playerEntity);
 		if (PlayerInfoApp.randomBackgrounds.get()) {
-			skinViewer.setBackground(getRandomBackground());
+			if (background == null) { background = PlayerInfoApp.getRandomBackground(); }
+			skinViewer.setBackground(background);
 			skinViewer.setDrawBackground(true);
 		}
 		
-		closeBtn = new EGuiButton(this, endX - 70, endY - 30, 60, 20, "Close");
-		downloadBtn = new EGuiButton(this, startX + 10, endY - 30, 60, 20, "Download").setDisplayStringColor(EColors.seafoam);
-		textureBtn = new EGuiButton(this, midX - 30, endY - 30, 60, 20, texture ? "3D Model" : "Texture").setDisplayStringColor(EColors.yellow);
+		int w = (width - 50) / 3;
+		
+		closeBtn = new WindowButton(this, endX - 10 - w, endY - 30, w, 20, "Close");
+		downloadBtn = new WindowButton(this, startX + 10, endY - 30, w, 20, "Download").setStringColor(EColors.seafoam);
+		textureBtn = new WindowButton(this, midX - w / 2, endY - 30, w, 20, texture ? "3D Model" : "Texture").setStringColor(EColors.yellow);
 		
 		addObject(skinViewer, closeBtn, downloadBtn, textureBtn);
 	}
@@ -103,6 +106,12 @@ public class SkinDisplayWindow extends WindowParent {
 	@Override
 	public void drawObject(int mXIn, int mYIn) {
 		drawDefaultBackground();
+		
+		if (skinViewer != null && PlayerInfoApp.drawCapes != null && PlayerInfoApp.drawCapes.get() != null) {
+			skinViewer.setDrawCape(PlayerInfoApp.drawCapes.get());
+			if (skinViewer.getPlayer() instanceof DummyPlayer) { ((DummyPlayer) skinViewer.getPlayer()).setAnimate(PlayerInfoApp.animateSkins.get()); }
+			skinViewer.getPlayerDrawer().setAnimateCapes(PlayerInfoApp.animateSkins.get());
+		}
 		
 		if (texture) {
 			drawRect(startX + 10, startY + 10, endX - 10, endY - 45, EColors.black);
@@ -117,14 +126,14 @@ public class SkinDisplayWindow extends WindowParent {
 	}
 	
 	@Override
-	public void actionPerformed(IEnhancedActionObject object, Object... args) {
+	public void actionPerformed(IActionObject object, Object... args) {
 		if (object == closeBtn) { close(); }
 		if (object == downloadBtn) { download(); }
 		
 		if (object == textureBtn) {
 			texture = !texture;
 			skinViewer.setVisible(!texture);
-			textureBtn.setDisplayString(texture ? "3D Model" : "Texture");
+			textureBtn.setString(texture ? "3D Model" : "Texture");
 		}
 	}
 	
@@ -222,7 +231,7 @@ public class SkinDisplayWindow extends WindowParent {
 	//-------------------------------
 	
 	private void openErrorBox(String title, String message) {
-		EGuiDialogueBox fail = new EGuiDialogueBox(DialogueBoxTypes.ok);
+		WindowDialogueBox fail = new WindowDialogueBox(DialogueBoxTypes.ok);
 		fail.setTitle(title);
 		fail.setTitleColor(EColors.lgray.intVal);
 		fail.setMessage(EnumChatFormatting.RED + message);
@@ -230,22 +239,22 @@ public class SkinDisplayWindow extends WindowParent {
 	}
 	
 	private void openSuccessBox(String title, String message, File path) {
-		EGuiDialogueBox success = new EGuiDialogueBox(DialogueBoxTypes.custom) {
-			EGuiButton openFolder = null, close = null;
+		WindowDialogueBox success = new WindowDialogueBox(DialogueBoxTypes.custom) {
+			WindowButton openFolder = null, close = null;
 			
 			@Override
 			public void initObjects() {
 				defaultHeader(this);
 				EDimension bdims = this.getDimensions();
 				
-				openFolder = new EGuiButton(this, bdims.midX - 90, bdims.endY - 30, 80, 20, "Open Folder");
-				close = new EGuiButton(this, bdims.midX + 10, bdims.endY - 30, 80, 20, "Close");
+				openFolder = new WindowButton(this, bdims.midX - 90, bdims.endY - 30, 80, 20, "Open Folder");
+				close = new WindowButton(this, bdims.midX + 10, bdims.endY - 30, 80, 20, "Close");
 				
 				addObject(openFolder, close);
 			}
 			
 			@Override
-			public void actionPerformed(IEnhancedActionObject object, Object... args) {
+			public void actionPerformed(IActionObject object, Object... args) {
 				if (object == openFolder) {
 					EUtil.openFile(path);
 				}
@@ -261,27 +270,6 @@ public class SkinDisplayWindow extends WindowParent {
 		success.setMessage(message);
 		success.setMessageColor(EColors.green.intVal);
 		EnhancedMC.displayWindow(success, this, true, false, false, CenterType.screen);
-	}
-	
-	private EResource getRandomBackground() {
-		int num = NumberUtil.getRoll(0, 11);
-		
-		switch (num) {
-		case 0: return PIResources.viewerBackground0;
-		case 1: return PIResources.viewerBackground1;
-		case 2: return PIResources.viewerBackground2;
-		case 3: return PIResources.viewerBackground3;
-		case 4: return PIResources.viewerBackground4;
-		case 5: return PIResources.viewerBackground5;
-		case 6: return PIResources.viewerBackground6;
-		case 7: return PIResources.viewerBackground7;
-		case 8: return PIResources.viewerBackground8;
-		case 9: return PIResources.viewerBackground9;
-		case 10: return PIResources.viewerBackground10;
-		case 11: return PIResources.viewerBackground11;
-		}
-		
-		return null;
 	}
 	
 }
