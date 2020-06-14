@@ -75,7 +75,7 @@ public class SkinDisplayWindow extends WindowParent {
 	//---------------------------
 	
 	@Override
-	public void initGui() {
+	public void initWindow() {
 		setObjectName(playerName + "'s Skin");
 		defaultDims();
 		setResizeable(true);
@@ -100,7 +100,7 @@ public class SkinDisplayWindow extends WindowParent {
 		downloadBtn = new WindowButton(this, startX + 10, endY - 30, w, 20, "Download").setStringColor(EColors.seafoam);
 		textureBtn = new WindowButton(this, midX - w / 2, endY - 30, w, 20, texture ? "3D Model" : "Texture").setStringColor(EColors.yellow);
 		
-		addObject(skinViewer, closeBtn, downloadBtn, textureBtn);
+		addObject(null, skinViewer, closeBtn, downloadBtn, textureBtn);
 	}
 	
 	@Override
@@ -250,7 +250,7 @@ public class SkinDisplayWindow extends WindowParent {
 				openFolder = new WindowButton(this, bdims.midX - 90, bdims.endY - 30, 80, 20, "Open Folder");
 				close = new WindowButton(this, bdims.midX + 10, bdims.endY - 30, 80, 20, "Close");
 				
-				addObject(openFolder, close);
+				addObject(null, openFolder, close);
 			}
 			
 			@Override

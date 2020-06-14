@@ -14,7 +14,6 @@ import com.Whodundid.core.util.resourceUtil.DynamicTextureHandler;
 import com.Whodundid.core.util.resourceUtil.EResource;
 import com.Whodundid.core.util.storageUtil.EArrayList;
 import com.Whodundid.core.util.storageUtil.EDimension;
-import com.Whodundid.core.windowLibrary.StaticWindowObject;
 import com.Whodundid.core.windowLibrary.windowObjects.actionObjects.WindowButton;
 import com.Whodundid.core.windowLibrary.windowObjects.advancedObjects.textArea.WindowTextArea;
 import com.Whodundid.core.windowLibrary.windowObjects.utilityObjects.PlayerViewer;
@@ -76,7 +75,7 @@ public class PlayerInfoWindow extends WindowParent {
 	}
 	
 	@Override
-	public void initGui() {
+	public void initWindow() {
 		setDimensions(495, defaultHeight);
 		setObjectName("Player Info Viewer");
 		setResizeable(true);
@@ -97,12 +96,12 @@ public class PlayerInfoWindow extends WindowParent {
 		downloadBtn = new WindowButton(this, nameHistory.endX + ((endX - nameHistory.endX) / 2) - 85, endY - 25, 80, 20, "Download").setStringColor(EColors.seafoam);
 		textureBtn = new WindowButton(this, nameHistory.endX + ((endX - nameHistory.endX) / 2) + 10, endY - 25, 80, 20, texture ? "3D Model" : "Texture").setStringColor(EColors.yellow);
 		
-		StaticWindowObject.setVisible(false, nameHistory, downloadBtn, textureBtn);
+		setVisible(false, nameHistory, downloadBtn, textureBtn);
 		
 		if (names == null) { app.fetchNameHistory(this, null, inputName, false); }
 		if (container == null) { app.fetchSkin(this, null, inputName); }
 		
-		addObject(closeBtn, downloadBtn, textureBtn, nameHistory);
+		addObject(null, closeBtn, downloadBtn, textureBtn, nameHistory);
 		
 		if (names != null) { addNames(); }
 		if (container != null) { addSkin(); }
@@ -119,7 +118,7 @@ public class PlayerInfoWindow extends WindowParent {
 				if (skinResponse && namesResponse) {
 					received = true;
 					
-					StaticWindowObject.setVisible(true, nameHistory, playerViewer, closeBtn, downloadBtn, textureBtn);
+					setVisible(true, nameHistory, playerViewer, closeBtn, downloadBtn, textureBtn);
 					
 					setObjectName(playerName + "'s Information");
 					getHeader().setTitle(getObjectName());
@@ -127,7 +126,7 @@ public class PlayerInfoWindow extends WindowParent {
 				else if (System.currentTimeMillis() - startTime >= checkTimeOut) {
 					timedOut = true;
 					
-					StaticWindowObject.setVisible(true, closeBtn, nameHistory);
+					setVisible(true, closeBtn, nameHistory);
 					
 					if (!namesResponse) {
 						nameHistory.addTextLine("Could not retrieve names data!", EColors.lred.intVal);
@@ -135,7 +134,7 @@ public class PlayerInfoWindow extends WindowParent {
 					
 					if (skinResponse && playerViewer != null) {
 						playerViewer.setVisible(skinResponse);
-						StaticWindowObject.setVisible(true, downloadBtn, textureBtn);
+						setVisible(true, downloadBtn, textureBtn);
 					}
 					
 					setObjectName(playerName != null ? playerName + "'s Information" : "Failed to Load Info!");
@@ -279,42 +278,46 @@ public class PlayerInfoWindow extends WindowParent {
 			downloadBtn.setVisible(true);
 			textureBtn.setVisible(true);
 			
-			addObject(playerViewer);
+			addObject(null, playerViewer);
 		}
 	}
 	
 	public void setSkin(SkinContainer containerIn) {
-		if (containerIn != null) {
-			//set skin
-			if (containerIn.getSkinImage() != null) { skin = new DynamicTextureHandler(mc.renderEngine, containerIn.getSkinImage()); }
-			else { skin = new DynamicTextureHandler(mc.renderEngine, new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB)); }
-			
-			//set cape
-			if (containerIn.getCapeImage() != null) { cape = new DynamicTextureHandler(mc.renderEngine, containerIn.getCapeImage()); }
-			else { cape = new DynamicTextureHandler(mc.renderEngine, new BufferedImage(64, 32, BufferedImage.TYPE_INT_ARGB)); }
-			
-			isAlex = containerIn.isAlex();
-			hasCape = containerIn.hasCape();
-			
-			if (playerEntity == null) {
-				playerEntity = new DummyPlayer(skin.getTextureLocation(), cape.getTextureLocation(), isAlex, containerIn.getUUID(), containerIn.getName(), PlayerInfoApp.animateSkins.get());
-				playerEntity.setDrawSkin(PlayerInfoApp.drawCapes.get());
-				playerEntity.setDrawName(PlayerInfoApp.drawNames.get());
-			}
-			
-			//items
-			ItemStack i = null;
-			
-			switch (uuid) {
-			case "be8ba05926444f4ca5e788a38e555b1e": i = new ItemStack(Item.getItemById(398), 1); break; //Whodundid - carrot on stick
-			case "d3dcdba8d6ee42778a810f359e4def25": i = new ItemStack(Item.getItemById(344), 1); break; //JamminOtter - egg
-			case "fd260ca4df524211a44f90e6ae95596a": i = new ItemStack(Item.getItemFromBlock(Blocks.sponge)); break; //King_of_ducks - sponge
-			}
-			
-			if (i != null) {
-				playerEntity.inventory.mainInventory[playerEntity.inventory.currentItem] = i;
+		try {
+			if (containerIn != null) {
+				//set skin
+				if (containerIn.getSkinImage() != null) { skin = new DynamicTextureHandler(mc.renderEngine, containerIn.getSkinImage()); }
+				else { skin = new DynamicTextureHandler(mc.renderEngine, new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB)); }
+				
+				//set cape
+				if (containerIn.getCapeImage() != null) { cape = new DynamicTextureHandler(mc.renderEngine, containerIn.getCapeImage()); }
+				else { cape = new DynamicTextureHandler(mc.renderEngine, new BufferedImage(64, 32, BufferedImage.TYPE_INT_ARGB)); }
+				
+				isAlex = containerIn.isAlex();
+				hasCape = containerIn.hasCape();
+				
+				if (playerEntity == null) {
+					playerEntity = new DummyPlayer(skin.getTextureLocation(), cape.getTextureLocation(), isAlex, containerIn.getUUID(), containerIn.getName(), PlayerInfoApp.animateSkins.get());
+					playerEntity.setFixTime(PlayerInfoApp.capeFixTime.get());
+					playerEntity.setDrawSkin(PlayerInfoApp.drawCapes.get());
+					playerEntity.setDrawName(PlayerInfoApp.drawNames.get());
+				}
+				
+				//items
+				ItemStack i = null;
+				
+				switch (uuid) {
+				case "be8ba05926444f4ca5e788a38e555b1e": i = new ItemStack(Item.getItemById(398), 1); break; //Whodundid - carrot on stick
+				case "d3dcdba8d6ee42778a810f359e4def25": i = new ItemStack(Item.getItemById(344), 1); break; //JamminOtter - egg
+				case "fd260ca4df524211a44f90e6ae95596a": i = new ItemStack(Item.getItemFromBlock(Blocks.sponge)); break; //King_of_ducks - sponge
+				}
+				
+				if (i != null) {
+					playerEntity.inventory.mainInventory[playerEntity.inventory.currentItem] = i;
+				}
 			}
 		}
+		catch (RuntimeException e) {}
 	}
 	
 	private void download() {
@@ -381,7 +384,7 @@ public class PlayerInfoWindow extends WindowParent {
 				openFolder = new WindowButton(this, bdims.midX - 90, bdims.endY - 30, 80, 20, "Open Folder");
 				close = new WindowButton(this, bdims.midX + 10, bdims.endY - 30, 80, 20, "Close");
 				
-				addObject(openFolder, close);
+				addObject(null, openFolder, close);
 			}
 			
 			@Override

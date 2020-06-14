@@ -3,6 +3,7 @@ package com.Whodundid.playerInfo.window;
 import com.Whodundid.core.EnhancedMC;
 import com.Whodundid.core.app.AppType;
 import com.Whodundid.core.app.RegisteredApps;
+import com.Whodundid.core.settings.KeyBindWindow;
 import com.Whodundid.core.util.EUtil;
 import com.Whodundid.core.util.renderUtil.CenterType;
 import com.Whodundid.core.util.renderUtil.EColors;
@@ -13,7 +14,6 @@ import com.Whodundid.core.windowLibrary.windowObjects.actionObjects.WindowTextFi
 import com.Whodundid.core.windowLibrary.windowObjects.advancedObjects.scrollList.WindowScrollList;
 import com.Whodundid.core.windowLibrary.windowObjects.basicObjects.WindowLabel;
 import com.Whodundid.core.windowLibrary.windowObjects.basicObjects.WindowRect;
-import com.Whodundid.core.windowLibrary.windowTypes.ActionObject;
 import com.Whodundid.core.windowLibrary.windowTypes.WindowParent;
 import com.Whodundid.core.windowLibrary.windowTypes.interfaces.IActionObject;
 import com.Whodundid.playerInfo.PlayerInfoApp;
@@ -27,7 +27,7 @@ public class PlayerInfoSettings extends WindowParent {
 	WindowScrollList list;
 	WindowButton animateSkins, drawCapes, drawNames, randomBackgrounds;
 	WindowButton searchBtn;
-	WindowButton skinsDir;
+	WindowButton skinsDir, editKeyBindings;
 	WindowTextField searchField;
 	
 	File skinDir = new File(RegisteredApps.getAppConfigBaseFileLocation(AppType.PLAYERINFO).getAbsolutePath() + "/Player Skins");
@@ -39,10 +39,10 @@ public class PlayerInfoSettings extends WindowParent {
 	}
 	
 	@Override
-	public void initGui() {
+	public void initWindow() {
 		setObjectName("Player Info Settings");
 		defaultDims();
-		setMinDims(170, 75);
+		setMinDims(defaultWidth, defaultHeight);
 		setResizeable(true);
 		setMaximizable(true);
 	}
@@ -51,27 +51,21 @@ public class PlayerInfoSettings extends WindowParent {
 	public void initObjects() {
 		defaultHeader(this);
 		
-		list = new WindowScrollList(this, startX + 2, startY + 20, width - 4, height - 22);
+		list = new WindowScrollList(this, startX + 2, startY + 2, width - 4, height - 4);
 		list.setBackgroundColor(0xff303030);
 		
-		int searchY = addSearch(8);
+		int searchY = addSearch(0);
 		int skinViewerY = addSkinViewer(searchY);
 		int skinDirY = addSkinDir(skinViewerY);
 		
-		list.fitItemsInList(5, 10);
+		list.fitItemsInList(4, 10);
 		
-		addObject(list);
+		addObject(null, list);
 	}
 	
 	@Override
 	public void drawObject(int mXIn, int mYIn) {
 		drawDefaultBackground();
-		
-		drawRect(startX + 1, startY + 19, endX - 1, endY - 1, -0x00cfcfcf); //grey background
-		drawRect(startX, startY + 18, endX, startY + 19, 0xff000000); //top line
-		
-		drawCenteredStringWithShadow("Player Info App Settings", midX, startY + 6, 0xffbb00);
-		
 		super.drawObject(mXIn, mYIn);
 	}
 	
@@ -83,6 +77,7 @@ public class PlayerInfoSettings extends WindowParent {
 		if (object == randomBackgrounds) { randomBackgrounds.toggleTrueFalse(PlayerInfoApp.randomBackgrounds, app, false); }
 		if (object == searchField || object == searchBtn) { openInfoWindow(searchField.getText()); }
 		if (object == skinsDir) { EUtil.openFile(skinDir); }
+		if (object == editKeyBindings) { EnhancedMC.displayWindow(new KeyBindWindow(app.nameChecker)); }
 	}
 	
 	@Override
@@ -102,9 +97,13 @@ public class PlayerInfoSettings extends WindowParent {
 	}
 	
 	private int addSearch(int yPos) {
-		WindowLabel searchLabel = new WindowLabel(list, 6, yPos, "Search Player", EColors.orange.intVal);
+		EDimension ld = list.getListDimensions();
 		
-		searchField = new WindowTextField(list, 6, searchLabel.endY + 8, 130, 18) {
+		WindowLabel searchLabel = new WindowLabel(list, ld.midX, yPos + 4, "Search Player", EColors.orange.intVal).setDrawCentered(true);
+		WindowRect labelBack = new WindowRect(list, 0, yPos, list.getListDimensions().endX, yPos + 16, EColors.black);
+		WindowRect divider1 = new WindowRect(list, 0, yPos + 1, list.getDimensions().endX, yPos + 15, EColors.dsteel);
+		
+		searchField = new WindowTextField(list, ld.midX - 100, searchLabel.endY + 10, 130, 18) {
 			@Override
 			public void keyPressed(char typedChar, int keyCode) {
 				super.keyPressed(typedChar, keyCode);
@@ -113,7 +112,7 @@ public class PlayerInfoSettings extends WindowParent {
 			}
 		};
 		if (app.isEnabled()) {
-			searchField.setTextWhenEmptyColor(EColors.dgray.intVal);
+			searchField.setTextWhenEmptyColor(EColors.gray.intVal);
 			searchField.setTextWhenEmpty("player name");
 		}
 		else {
@@ -126,32 +125,32 @@ public class PlayerInfoSettings extends WindowParent {
 		searchBtn = new WindowButton(list, searchField.endX + 10, searchField.startY - 1, 60, 20, "Search");
 		searchBtn.setEnabled(false);
 		
-		WindowRect divider = new WindowRect(list, 0, searchField.endY + 8, list.getDimensions().endX, searchField.endY + 9, EColors.black);
-		divider.setClickable(false);
+		list.addAndIgnore(labelBack, divider1);
+		list.addObjectToList(searchLabel, searchField, searchBtn);
 		
-		list.addToIgnoreList(divider);
-		
-		list.addObjectToList(searchLabel, searchField, searchBtn, divider);
-		
-		return (searchField.endY + 16) - list.getDimensions().startY;
+		return (searchField.endY + 7) - list.getDimensions().startY;
 	}
 	
 	private int addSkinViewer(int yPos) {
-		WindowLabel skinViewerLabel = new WindowLabel(list, 6, yPos, "Skin Viewer", EColors.orange.intVal);
+		EDimension ld = list.getListDimensions();
 		
-		animateSkins = new WindowButton(list, 6, skinViewerLabel.endY + 8, 60, 20, app.animateSkins);
+		WindowLabel skinViewerLabel = new WindowLabel(list, ld.midX, yPos + 4, "Skin Viewer", EColors.orange).setDrawCentered(true);
+		WindowRect labelBack = new WindowRect(list, 0, yPos, list.getListDimensions().endX, yPos + 16, EColors.black);
+		WindowRect divider1 = new WindowRect(list, 0, yPos + 1, list.getDimensions().endX, yPos + 15, EColors.dsteel);
+		
+		animateSkins = new WindowButton(list, ld.midX - 100, skinViewerLabel.endY + 10, 60, 20, app.animateSkins);
 		WindowLabel animateSkinsLabel = new WindowLabel(list, animateSkins.endX + 10, animateSkins.startY + 6, "Animate Player Skins");
 		
-		drawCapes = new WindowButton(list, 6, animateSkins.endY + 8, 60, 20, app.drawCapes);
+		drawCapes = new WindowButton(list, ld.midX - 100, animateSkins.endY + 6, 60, 20, app.drawCapes);
 		WindowLabel drawCapesLabel = new WindowLabel(list, drawCapes.endX + 10, drawCapes.startY + 6, "Draw Player Capes");
 		
-		drawNames = new WindowButton(list, 6, drawCapes.endY + 8, 60, 20, app.drawNames);
+		drawNames = new WindowButton(list, ld.midX - 100, drawCapes.endY + 6, 60, 20, app.drawNames);
 		WindowLabel drawNamesLabel = new WindowLabel(list, drawNames.endX + 10, drawNames.startY + 6, "Draw Player Names");
 		
-		randomBackgrounds = new WindowButton(list, 6, drawNames.endY + 8, 60, 20, app.randomBackgrounds);
+		randomBackgrounds = new WindowButton(list, ld.midX - 100, drawNames.endY + 6, 60, 20, app.randomBackgrounds);
 		WindowLabel randomBackgroundsLabel = new WindowLabel(list, randomBackgrounds.endX + 10, randomBackgrounds.startY + 6, "Draw Random Backgrounds");
 		
-		ActionObject.setActionReceiver(this, animateSkins, drawCapes, drawNames, randomBackgrounds);
+		IActionObject.setActionReceiver(this, animateSkins, drawCapes, drawNames, randomBackgrounds);
 		WindowLabel.setColor(EColors.lgray, animateSkinsLabel, drawCapesLabel, drawNamesLabel, randomBackgroundsLabel);
 		
 		animateSkinsLabel.setHoverText("Players will perform a walking animation");
@@ -159,37 +158,41 @@ public class PlayerInfoSettings extends WindowParent {
 		drawNamesLabel.setHoverText("Players will have their name drawn above them");
 		randomBackgroundsLabel.setHoverText("Will draw a random Minecraft themed background behind the player being viewed");
 		
-		list.addObjectToList(skinViewerLabel);
+		list.addAndIgnore(labelBack, divider1, skinViewerLabel);
 		list.addObjectToList(animateSkins, animateSkinsLabel);
 		list.addObjectToList(drawCapes, drawCapesLabel);
 		list.addObjectToList(drawNames, drawNamesLabel);
 		list.addObjectToList(randomBackgrounds, randomBackgroundsLabel);
 		
-		return randomBackgrounds.endY - list.getDimensions().startY;
+		return (randomBackgrounds.endY + 7) - list.getDimensions().startY;
 	}
 	
 	private int addSkinDir(int yPos) {
 		EDimension ld = list.getListDimensions();
 		int w = MathHelper.clamp_int(ld.width - (ld.width / 3), 100, 200);
 		
-		WindowRect divider = new WindowRect(list, 0, yPos + 8, list.getDimensions().endX, yPos + 9, EColors.black);
-		WindowRect back = new WindowRect(list, 0, yPos + 9, list.getDimensions().endX, list.getDimensions().endY, EColors.steel);
-		skinsDir = new WindowButton(list, ld.midX - (w / 2), divider.endY + 12, w, 20, "Open Skin Folder");
+		WindowRect divider = new WindowRect(list, 0, yPos, list.getDimensions().endX, yPos + 1, EColors.black);
+		WindowRect back = new WindowRect(list, 0, yPos + 1, list.getDimensions().endX, list.getDimensions().endY, EColors.steel);
+		
+		skinsDir = new WindowButton(list, ld.midX - (w / 2), divider.endY + 14, w, 20, "Open Skin Folder");
+		editKeyBindings = new WindowButton(list, ld.midX - (w / 2), skinsDir.endY + 4, w, 20, "Edit Key Bindings");
 		
 		skinsDir.setStringColor(EColors.seafoam);
+		editKeyBindings.setStringColor(EColors.yellow);
+		
 		skinsDir.setEnabled(skinDir.exists());
+		
 		skinsDir.setHoverText(skinDir.exists() ? "Opens the folder where player skins are downloaded to." : "The player skins folder has not yet been made. Download a skin first!");
+		editKeyBindings.setHoverText("Opens the Player Info Keybindings within the Keybinds window.");
 		
-		skinsDir.setActionReceiver(this);
+		IActionObject.setActionReceiver(this, skinsDir, editKeyBindings);
 		
-		divider.setClickable(false);
-		back.setClickable(false);
+		setClickable(false, divider, back);
 		
-		list.addToIgnoreList(divider, back);
+		list.addAndIgnore(divider, back);
+		list.addObjectToList(skinsDir, editKeyBindings);
 		
-		list.addObjectToList(divider, back, skinsDir);
-		
-		return skinsDir.endY - list.getDimensions().startY;
+		return (editKeyBindings.endY + 13) - list.getDimensions().startY;
 	}
 	
 	private void openInfoWindow(String name) {

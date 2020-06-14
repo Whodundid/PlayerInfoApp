@@ -8,7 +8,7 @@ public class PIResources extends AppResources {
 	public static final EResource logo = new EResource("playerinfo", "logo.png");
 	public static final EResource icon = new EResource("playerinfo", "icon.png");
 	public static final EResource viewerIcon = new EResource("playerinfo", "viewer.png");
-	public static final EResource viewerPlus = new EResource("playerInfo", "viewer_plus.png");
+	public static final EResource viewerPlus = new EResource("playerinfo", "viewer_plus.png");
 	public static final EResource viewerBackground0 = new EResource("playerinfo", "viewer_background_0.png");
 	public static final EResource viewerBackground1 = new EResource("playerinfo", "viewer_background_1.png");
 	public static final EResource viewerBackground2 = new EResource("playerinfo", "viewer_background_2.png");
@@ -23,6 +23,7 @@ public class PIResources extends AppResources {
 	public static final EResource viewerBackground11 = new EResource("playerinfo", "viewer_background_11.png");
 	public static final EResource viewerBackground12 = new EResource("playerinfo", "viewer_background_12.png");
 	public static final EResource viewerBackground13 = new EResource("playerinfo", "viewer_background_13.png");
+	public static final EResource viewerBackground14 = new EResource("playerinfo", "viewer_background_14.png");
 	
 	@Override
 	public void registerResources() {
@@ -44,6 +45,7 @@ public class PIResources extends AppResources {
 		viewerBackground11.register();
 		viewerBackground12.register();
 		viewerBackground13.register();
+		viewerBackground14.register();
 	}
 
 }

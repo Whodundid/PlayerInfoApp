@@ -1,10 +1,10 @@
 package com.Whodundid.playerInfo;
 
 import com.Whodundid.core.EnhancedMC;
-import com.Whodundid.core.app.AppConfigSetting;
 import com.Whodundid.core.app.AppType;
 import com.Whodundid.core.app.EMCApp;
 import com.Whodundid.core.app.config.AppConfigFile;
+import com.Whodundid.core.app.config.AppConfigSetting;
 import com.Whodundid.core.terminal.window.ETerminal;
 import com.Whodundid.core.util.EUtil;
 import com.Whodundid.core.util.chatUtil.ChatBuilder;
@@ -12,6 +12,7 @@ import com.Whodundid.core.util.mathUtil.NumberUtil;
 import com.Whodundid.core.util.playerUtil.PlayerFacing;
 import com.Whodundid.core.util.resourceUtil.EResource;
 import com.Whodundid.core.util.storageUtil.EArrayList;
+import com.Whodundid.core.util.storageUtil.StorageBox;
 import com.Whodundid.playerInfo.cmd.CMD_CheckNameHistory;
 import com.Whodundid.playerInfo.cmd.CMD_CheckPlayerSkin;
 import com.Whodundid.playerInfo.cmd.CMD_InfoPlayer;
@@ -47,10 +48,21 @@ public final class PlayerInfoApp extends EMCApp {
 	public static final String VERSION = "2.0";
 	public static final String NAME = "EMC Player Info";
 	
+	//---------
+	//Resources
+	//---------
+	
+	public static final PIResources resources = new PIResources();
+	
+	//---------------
+	//config settings
+	//---------------
+	
 	public static final AppConfigSetting<Boolean> drawCapes = new AppConfigSetting(Boolean.class, "drawCapes", "Draw Capes", true);
 	public static final AppConfigSetting<Boolean> animateSkins = new AppConfigSetting(Boolean.class, "animateSkin", "Anitate Skin Display", true);
 	public static final AppConfigSetting<Boolean> drawNames = new AppConfigSetting(Boolean.class, "drawName", "Draw Player Name", false);
 	public static final AppConfigSetting<Boolean> randomBackgrounds = new AppConfigSetting(Boolean.class, "randomBackgrounds", "Randomize Player Backgrounds", true);
+	public static final AppConfigSetting<Long> capeFixTime = new AppConfigSetting(Long.class, "capeFixTime", "Cape Fix Time", 20l);
 	
 	private ArrayList<String> preSorted = new ArrayList<String>();
 	private ArrayList<String> pastNames = new ArrayList<String>();
@@ -66,6 +78,7 @@ public final class PlayerInfoApp extends EMCApp {
 	public static boolean received = false;
 	public static SkinContainer container = null;
 	public static PlayerInfoWindow window;
+	public static PlayerInfoApp instance = null;
 
 	//--------------------------
 	//PlayerInfoApp Constructors
@@ -73,23 +86,31 @@ public final class PlayerInfoApp extends EMCApp {
 	
 	public PlayerInfoApp() {
 		super(AppType.PLAYERINFO);
+		instance = this;
+	}
+	
+	@Override
+	public void build() {
 		version = VERSION;
-		versionDate = "June 6, 2020";
+		versionDate = "June 11, 2020";
 		author = "Whodundid";
 		artist = "Mr.JamminOtter";
+		donation = new StorageBox("Consider donating to support EMC development!", "https://www.paypal.me/Whodundid");
 		addDependency(AppType.CORE, "1.0");
 		
 		configManager.setMainConfig(new AppConfigFile(this, "playerinfo", "EMC Player Info Config"));
 		setMainWindow(new PlayerInfoSettings());
 		addWindow(new SkinDisplayWindow("", ""), new PlayerInfoWindow(""));
 		
-		setResources(new PIResources());
+		setResources(resources);
 		logo = new EArrayList<EResource>(PIResources.logo);
 		
-		registerSetting(drawCapes, animateSkins, drawNames, randomBackgrounds);
+		registerSetting(drawCapes, animateSkins, drawNames, randomBackgrounds, capeFixTime);
 		
 		setAliases("playerinfo", "pinfo", "pi");
 	}
+	
+	public static PlayerInfoApp instance() { return instance; }
 
 	@Override
 	public void onPostInit(FMLPostInitializationEvent event) {
@@ -171,7 +192,7 @@ public final class PlayerInfoApp extends EMCApp {
 	}
 	
 	public static EResource getRandomBackground() {
-		int num = NumberUtil.getRoll(0, 13);
+		int num = NumberUtil.getRoll(0, 14);
 		
 		switch (num) {
 		case 0: return PIResources.viewerBackground0;
@@ -188,6 +209,7 @@ public final class PlayerInfoApp extends EMCApp {
 		case 11: return PIResources.viewerBackground11;
 		case 12: return PIResources.viewerBackground12;
 		case 13: return PIResources.viewerBackground13;
+		case 14: return PIResources.viewerBackground14;
 		}
 		
 		return null;
