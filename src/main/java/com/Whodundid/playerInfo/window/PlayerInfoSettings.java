@@ -42,7 +42,7 @@ public class PlayerInfoSettings extends WindowParent {
 	public void initWindow() {
 		setObjectName("Player Info Settings");
 		defaultDims();
-		setMinDims(defaultWidth, defaultHeight);
+		setMinDims(defaultWidth, 100);
 		setResizeable(true);
 		setMaximizable(true);
 	}
@@ -60,7 +60,7 @@ public class PlayerInfoSettings extends WindowParent {
 		
 		list.fitItemsInList(4, 10);
 		
-		addObject(null, list);
+		addObject(list);
 	}
 	
 	@Override

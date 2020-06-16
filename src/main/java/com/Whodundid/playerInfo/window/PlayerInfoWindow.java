@@ -101,7 +101,7 @@ public class PlayerInfoWindow extends WindowParent {
 		if (names == null) { app.fetchNameHistory(this, null, inputName, false); }
 		if (container == null) { app.fetchSkin(this, null, inputName); }
 		
-		addObject(null, closeBtn, downloadBtn, textureBtn, nameHistory);
+		addObject(closeBtn, downloadBtn, textureBtn, nameHistory);
 		
 		if (names != null) { addNames(); }
 		if (container != null) { addSkin(); }
@@ -278,7 +278,7 @@ public class PlayerInfoWindow extends WindowParent {
 			downloadBtn.setVisible(true);
 			textureBtn.setVisible(true);
 			
-			addObject(null, playerViewer);
+			addObject(playerViewer);
 		}
 	}
 	
@@ -384,7 +384,7 @@ public class PlayerInfoWindow extends WindowParent {
 				openFolder = new WindowButton(this, bdims.midX - 90, bdims.endY - 30, 80, 20, "Open Folder");
 				close = new WindowButton(this, bdims.midX + 10, bdims.endY - 30, 80, 20, "Close");
 				
-				addObject(null, openFolder, close);
+				addObject(openFolder, close);
 			}
 			
 			@Override

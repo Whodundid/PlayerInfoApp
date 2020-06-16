@@ -2,15 +2,15 @@
 {
   "modid": "playerinfo",
   "name": "EMC Player Info",
-  "description": "Player Info App for EnhancedMC 1.0",
-  "version": "2.0",
-  "mcversion": "1.8.9",
+  "description": "EMCApp: Lookup player name history and current skins in-game.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["Whodundid"],
-  "credits": "Mr.JamminOtter for art and logos",
+  "authorList": ["Whodundid, Mr.JamminOtter"],
+  "credits": "Requires 'EnhancedMC' version 1.0 to work!",
   "logoFile": "",
   "screenshots": [],
-  "dependencies": [enhancedmc]
+  "dependencies": ["enhancedmc"]
 }
 ]
