@@ -120,10 +120,11 @@ public class PlayerInfoSettings extends WindowParent {
 			searchField.setTextWhenEmpty("Player Info disabled!");
 		}
 		searchField.setClickable(app.isEnabled());
-		searchField.setActionReceiver(this);
 		
 		searchBtn = new WindowButton(list, searchField.endX + 10, searchField.startY - 1, 60, 20, "Search");
 		searchBtn.setEnabled(false);
+		
+		IActionObject.setActionReceiver(this, searchField, searchBtn);
 		
 		list.addAndIgnore(labelBack, divider1);
 		list.addObjectToList(searchLabel, searchField, searchBtn);

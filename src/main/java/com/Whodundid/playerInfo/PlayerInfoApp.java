@@ -320,7 +320,7 @@ public final class PlayerInfoApp extends EMCApp {
 		pastNames.clear();
 		preSorted.clear();
 		startPos = 0;
-
+		
 		try {
 			URL uuidFetcher = new URL("https://api.mojang.com/users/profiles/minecraft/" + playerName);
 			InputStreamReader uuidReader = new InputStreamReader(uuidFetcher.openStream());
@@ -331,7 +331,6 @@ public final class PlayerInfoApp extends EMCApp {
 				uuid = testUUID.substring(uuidIndex, testUUID.length() - 2);
 			}
 			
-			//System.out.println(uuid);
 			String hypuuid = uuid.substring(0, 8) + "-" + uuid.substring(8, 12) + "-" + uuid.substring(12, 16) + "-" + uuid.subSequence(16, 20) + "-" + uuid.substring(20);
 			//System.out.println("/viewprofile " + hypuuid);
 			
@@ -354,7 +353,8 @@ public final class PlayerInfoApp extends EMCApp {
 						break;
 					}
 				}
-				if (names.charAt(startPos) == ']') { return; }
+				
+				//if (names.charAt(startPos) == ']') { return; }
 				while (names.charAt(startPos) != ']') {
 					names = names.substring(startPos + 1);
 					preSorted.add(splitValues(names));
@@ -368,6 +368,7 @@ public final class PlayerInfoApp extends EMCApp {
 					preSorted.remove(0);
 					preSorted.remove(0);
 				}
+				
 				curName = last;
 			}
 		}
